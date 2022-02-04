@@ -15,9 +15,20 @@ import com.ninanadia.alarmapp.room.Alarm
 import kotlinx.android.synthetic.main.item_row_reminder_alarm.view.*
 
 //class ini berfungsi untuk menghubungkan data dengan ui (list)
-class AlarmAdapter() : RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
+class AlarmAdapter() :
+    RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
 
     var alarms = emptyList<Alarm>()
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): AlarmViewHolder {
+        return AlarmViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_row_reminder_alarm, parent, false)
+        )
+    }
 
     class AlarmViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
@@ -29,13 +40,6 @@ class AlarmAdapter() : RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlarmViewHolder {
-        return AlarmViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_row_reminder_alarm, parent, false)
-        )
-    }
-
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         val alarm = alarms[position]
         holder.view.item_time_alarm.text = alarm.time
@@ -43,16 +47,11 @@ class AlarmAdapter() : RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
         holder.view.item_note_alarm.text = alarm.note
 
         when (alarm.type) {
-            0 -> holder.view.item_img_one_time.loadImageDrawable(
-                holder.view.context,
-                R.drawable.ic_one_time
-            )
-            1 -> holder.view.item_img_one_time.loadImageDrawable(
-                holder.view.context,
-                R.drawable.ic_repeating
-            )
+            0 -> holder.view.item_img_one_time.loadImageDrawable(holder.view.context, R.drawable.ic_one_time)
+            1 -> holder.view.item_img_one_time.loadImageDrawable(holder.view.context, R.drawable.ic_repeating)
         }
     }
+
     override fun getItemCount() = alarms.size
 
     private fun ImageView.loadImageDrawable(context: Context, drawable: Int){

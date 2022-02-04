@@ -19,14 +19,12 @@ class OneTimeAlarmActivity : AppCompatActivity(), View.OnClickListener,
     DatePickerFragment.DialogDateListener, TimePickerFragment.DialogTimeListener {
 
     private var binding: ActivityMainBinding? = null
-
     private lateinit var alarmReceiver: AlarmReceiver
-
     val db by lazy { AlarmDB(this) }
 
     companion object {
         private const val DATE_PICKER_TAG = "DatePicker"
-        private const val TIME_PICKER_ONCE_TAG = "TimePicker"
+        private const val TIME_PICKER_ONCE_TAG = "TimePickerOnce"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +34,8 @@ class OneTimeAlarmActivity : AppCompatActivity(), View.OnClickListener,
 
         btn_set_date_one_time.setOnClickListener(this)
         btn_set_time_one_time.setOnClickListener(this)
-
         btn_add_set_one_time_alarm.setOnClickListener(this)
+        btn_cancel_set_one_time_alarm.setOnClickListener(this)
 
         alarmReceiver = AlarmReceiver()
     }
@@ -57,20 +55,22 @@ class OneTimeAlarmActivity : AppCompatActivity(), View.OnClickListener,
                 val onceTime = tv_once_time.text.toString()
                 val onceMessage = et_note_one_time.text.toString()
 
+                CoroutineScope(Dispatchers.IO).launch {
+                    db.alarmDao().addAlarm(
+                        Alarm(0, onceTime, onceDate, onceMessage, AlarmReceiver.TYPE_ONE_TIME)
+                    )
+                    finish()
+                }
+
                 alarmReceiver.setOneTimeAlarm(
                     this, AlarmReceiver.TYPE_ONE_TIME,
                     onceDate,
                     onceTime,
                     onceMessage
                 )
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    db.alarmDao().addAlarm(
-                        Alarm(0, onceTime, onceDate, onceMessage, AlarmReceiver.TYPE_ONE_TIME)
-                    )
-
-                    finish()
-                }
+            }
+            R.id.btn_cancel_set_one_time_alarm -> {
+                finish()
             }
         }
     }
@@ -78,10 +78,10 @@ class OneTimeAlarmActivity : AppCompatActivity(), View.OnClickListener,
     override fun onDialogDateSet(tag: String?, year: Int, month: Int, dayOfMonth: Int) {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, dayOfMonth)
+        val dateFormat = SimpleDateFormat("dd-MM-yyyyy", Locale.getDefault())
 
-        val dateFormatOneTime = SimpleDateFormat("dd-MM-yyyyy", Locale.getDefault())
-
-        tv_once_date.text = dateFormatOneTime.format(calendar.time)
+        //set text dari textview once
+        tv_once_date.text = dateFormat.format(calendar.time)
     }
 
     override fun onDialogTimeSet(tag: String?, hourOfDay: Int, minute: Int) {
@@ -89,10 +89,11 @@ class OneTimeAlarmActivity : AppCompatActivity(), View.OnClickListener,
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
         calendar.set(Calendar.MINUTE, minute)
 
-        val timeFormatOneTime = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val dateFormatOneTime = SimpleDateFormat("HH:mm", Locale.getDefault())
+        //val timeFormatOneTime = SimpleDateFormat("HH:mm", Locale.getDefault())
 
         when (tag) {
-            TIME_PICKER_ONCE_TAG -> tv_once_time.text = timeFormatOneTime.format(calendar.time)
+            TIME_PICKER_ONCE_TAG -> tv_once_time.text = dateFormatOneTime.format(calendar.time)
             else -> {
 
             }

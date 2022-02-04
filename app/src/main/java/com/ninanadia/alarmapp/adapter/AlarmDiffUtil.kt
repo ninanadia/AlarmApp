@@ -33,6 +33,5 @@ class AlarmDiffUtil(private val oldList: List<Alarm>, private val newList: List<
                 && oldData.time == newData.time
                 && oldData.note == newData.note
                 && oldData.type == newData.type
-
     }
 }

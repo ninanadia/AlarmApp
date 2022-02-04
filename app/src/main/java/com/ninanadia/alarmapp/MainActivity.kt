@@ -19,13 +19,17 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-
     private lateinit var alarmAdapter: AlarmAdapter
     private lateinit var alarmReceiver: AlarmReceiver
     val db by lazy { AlarmDB(this) }
 
+    // perubahan onStart menjadi onResume dilakukan untuk menghilangkan bug penambahan alarm
+    // sehingga data akan diperbarui meskpiun MainActivity ini sebelumnya dalam kondisi onPause
     override fun onResume() {
         super.onResume()
+        // Menghapus CoroutineScope karena LiveData tidak dapat berjalan di background thread.
+        // LiveData digunakan agar recyclerview dapat memperbarui data secara langsung
+        // tanpa harus melalui lifecycle onResume ataupun onCreate (memulai ulang activity)
         db.alarmDao().getAlarm().observe(this@MainActivity) {
             alarmAdapter.setData(it)
             Log.d("MainActivity", "dbresponse: $it")
@@ -49,14 +53,16 @@ class MainActivity : AppCompatActivity() {
         rv_reminder_alarm.apply {
             layoutManager = LinearLayoutManager(applicationContext)
             adapter = alarmAdapter
-
             swipeToDelete(this)
         }
     }
 
     private fun swipeToDelete(recyclerView: RecyclerView) {
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
+        ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(
+                0,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            ) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -66,19 +72,20 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // TODO Cancel alarm by type when item of RecyclerView onSwiped()
                 val typeOfAlarm = alarmAdapter.alarms[viewHolder.adapterPosition].type
                 alarmReceiver.cancelAlarm(this@MainActivity, typeOfAlarm)
 
-                val deletedTime = alarmAdapter.alarms[viewHolder.adapterPosition]
+                val deletedItem = alarmAdapter.alarms[viewHolder.adapterPosition]
 
                 //delete item
                 CoroutineScope(Dispatchers.IO).launch {
-                    db.alarmDao().deleteAlarm(deletedTime)
+                    db.alarmDao().deleteAlarm(deletedItem)
                 }
                 alarmAdapter.notifyItemRemoved(viewHolder.adapterPosition)
-                Toast.makeText(applicationContext, "Success Delete Alarm", Toast.LENGTH_LONG).show()
+                //Toast.makeText(applicationContext, "Success Delete Alarm", Toast.LENGTH_LONG).show()
             }
-            }).attachToRecyclerView(recyclerView)
+        }).attachToRecyclerView(recyclerView)
     }
 
     private fun initAlarmType() {
@@ -101,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initTimeToday() {
         val timeNow = Calendar.getInstance()
-        val timeFormat = SimpleDateFormat("HH:mm")
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val formattedTime = timeFormat.format(timeNow.time)
 
         tv_time_today.text = formattedTime

@@ -24,7 +24,7 @@ import java.util.*
 class AlarmReceiver : BroadcastReceiver() {
 
     companion object {
-
+        // TODO change value of const val TYPE_ONE_TIME & TYPE_REPEATING to Int
         //variabel konstanta dibawah digunakan untuk menentukan tipe alarm
         const val TYPE_ONE_TIME = 0
         const val TYPE_REPEATING = 1
@@ -45,6 +45,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     //Method yang akan memproses data dari Input yang masuk
     override fun onReceive(context: Context, intent: Intent) {
+        // TODO Change getStringExtra() to be getIntExtra()
         val type = intent.getIntExtra(EXTRA_TYPE, 0)
         val message = intent.getStringExtra(EXTRA_MESSAGE)
         val title = if (type == TYPE_ONE_TIME) "One Time Alarm" else "Repeating Alarm"
@@ -129,7 +130,6 @@ class AlarmReceiver : BroadcastReceiver() {
             bulan juni, maka nilai 6 tadi harus kita kurangi -1
         */
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateArray[2]))
-
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0]))
         calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1]))
         calendar.set(Calendar.SECOND, 0)
@@ -149,7 +149,12 @@ class AlarmReceiver : BroadcastReceiver() {
         Toast.makeText(context, "Succes Set Up One Time Alarm", Toast.LENGTH_SHORT).show()
     }
 
-    fun setRepeatingAlarm(context: Context, type: Int, time: String, message: String) {
+    fun setRepeatingAlarm(
+        context: Context,
+        type: Int,
+        time: String,
+        message: String
+    ) {
         if (isDateInvalid(time, TIME_FORMAT)) return
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -158,8 +163,6 @@ class AlarmReceiver : BroadcastReceiver() {
         intent.putExtra(EXTRA_MESSAGE, message)
         val putExtra = intent.putExtra(EXTRA_TYPE, type)
         val timeArray = time.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0]))
         calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1]))
@@ -177,17 +180,16 @@ class AlarmReceiver : BroadcastReceiver() {
         Toast.makeText(context, "Succes Set Up Repeating Alarm", Toast.LENGTH_SHORT).show()
     }
 
+    // TODO Cancel Alarm by type
     fun cancelAlarm(context: Context, type: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
-
-        val requiresCode = when (type) {
+        val requestCode = when (type) {
             TYPE_ONE_TIME -> ID_ONETIME
             TYPE_REPEATING -> ID_REPEATING
-            else -> Log.i("Cancel Alarm", "cancelAlarm: Unknown type of alarm")
+            else -> Log.i("CancelAlarm", "cancelAlarm: Unknown type of alarm")
         }
-
-        val pendingIntent = PendingIntent.getBroadcast(context, requiresCode, intent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0)
         pendingIntent.cancel()
         alarmManager.cancel(pendingIntent)
         if (type == TYPE_ONE_TIME) {

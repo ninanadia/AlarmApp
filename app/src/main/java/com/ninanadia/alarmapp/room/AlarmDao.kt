@@ -16,6 +16,8 @@ interface AlarmDao {
 
     //Query untuk mengambil data alarm
     @Query("SELECT * FROM alarm")
+    // LiveData untuk memberitahu perubahan data yang terjadi di activity secara langsung
+    // sehingga recyclerview dapat memperbarui data secara langsung
     fun getAlarm(): LiveData<List<Alarm>>
 
     //Query untuk menghapus data alarm
