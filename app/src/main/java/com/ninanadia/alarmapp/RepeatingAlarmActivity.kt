@@ -66,6 +66,7 @@ class RepeatingAlarmActivity : AppCompatActivity(), View.OnClickListener,
                 }
             }
             R.id.btn_cancel_set_repeating_alarm -> {
+                onBackPressed()
                 finish()
             }
         }
@@ -76,11 +77,11 @@ class RepeatingAlarmActivity : AppCompatActivity(), View.OnClickListener,
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
         calendar.set(Calendar.MINUTE, minute)
 
-        val dateFormatRepeating = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val timeFormatRepeating = SimpleDateFormat("HH:mm", Locale.getDefault())
 
         when (tag) {
             TIME_PICKER_REPEAT_TAG -> tv_repeating_time.text =
-                dateFormatRepeating.format(calendar.time)
+                timeFormatRepeating.format(calendar.time)
             else -> {
             }
         }

@@ -41,6 +41,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        alarmReceiver = AlarmReceiver()
+
         initTimeToday()
         initDateToday()
         initAlarmType()
@@ -83,7 +85,7 @@ class MainActivity : AppCompatActivity() {
                     db.alarmDao().deleteAlarm(deletedItem)
                 }
                 alarmAdapter.notifyItemRemoved(viewHolder.adapterPosition)
-                //Toast.makeText(applicationContext, "Success Delete Alarm", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "Success Delete Alarm", Toast.LENGTH_LONG).show()
             }
         }).attachToRecyclerView(recyclerView)
     }

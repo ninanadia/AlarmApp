@@ -70,6 +70,7 @@ class OneTimeAlarmActivity : AppCompatActivity(), View.OnClickListener,
                 )
             }
             R.id.btn_cancel_set_one_time_alarm -> {
+                onBackPressed()
                 finish()
             }
         }
@@ -78,10 +79,10 @@ class OneTimeAlarmActivity : AppCompatActivity(), View.OnClickListener,
     override fun onDialogDateSet(tag: String?, year: Int, month: Int, dayOfMonth: Int) {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, dayOfMonth)
-        val dateFormat = SimpleDateFormat("dd-MM-yyyyy", Locale.getDefault())
+        val dateFormatOneTime = SimpleDateFormat("dd-MM-yyyyy", Locale.getDefault())
 
         //set text dari textview once
-        tv_once_date.text = dateFormat.format(calendar.time)
+        tv_once_date.text = dateFormatOneTime.format(calendar.time)
     }
 
     override fun onDialogTimeSet(tag: String?, hourOfDay: Int, minute: Int) {
@@ -89,11 +90,10 @@ class OneTimeAlarmActivity : AppCompatActivity(), View.OnClickListener,
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
         calendar.set(Calendar.MINUTE, minute)
 
-        val dateFormatOneTime = SimpleDateFormat("HH:mm", Locale.getDefault())
-        //val timeFormatOneTime = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val timeFormatOneTime = SimpleDateFormat("HH:mm", Locale.getDefault())
 
         when (tag) {
-            TIME_PICKER_ONCE_TAG -> tv_once_time.text = dateFormatOneTime.format(calendar.time)
+            TIME_PICKER_ONCE_TAG -> tv_once_time.text = timeFormatOneTime.format(calendar.time)
             else -> {
 
             }

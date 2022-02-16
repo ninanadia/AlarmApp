@@ -119,7 +119,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val dateArray = date.split("-").toTypedArray()
         val timeArray = time.split(":").toTypedArray()
         val calendar = Calendar.getInstance()
-        calendar.set(Calendar.YEAR, Integer.parseInt(dateArray[0]))
+        calendar.set(Calendar.YEAR, Integer.parseInt(dateArray[2]))
         calendar.set(Calendar.MONTH, Integer.parseInt(dateArray[1]) - 1)
         /*
             mengapa pada code diatas data dikurangi 1 ?
@@ -129,7 +129,7 @@ class AlarmReceiver : BroadcastReceiver() {
             Indexnya ini dimulai dari 0, untuk memperoleh
             bulan juni, maka nilai 6 tadi harus kita kurangi -1
         */
-        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateArray[2]))
+        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateArray[0]))
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0]))
         calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1]))
         calendar.set(Calendar.SECOND, 0)
